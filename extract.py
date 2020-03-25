@@ -67,7 +67,7 @@ with th.no_grad():
                     # normalized_video = F.normalize(video, dim=1)
                     video = video.cpu().numpy()
                     min_max_scaler = preprocessing.MinMaxScaler()
-                    normalized_video = video.fit_transform(normalized_video)
+                    normalized_video = video.fit_transform(normalized_video.ravel())
                     # normalized_video = video / video.sum(0).expand_as(video)
                     if args.half_precision:
                         normalized_video = normalized_video.astype('float16')
