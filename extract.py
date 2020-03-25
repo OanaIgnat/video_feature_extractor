@@ -61,10 +61,12 @@ with th.no_grad():
                 video = preprocess(video)
 
                 if args.only_preprocess:
+                    print("Saving only the preprocessed video")
                     video = video.cpu().numpy()
+                    normalized_video = F.normalize(video, dim=1)
                     if args.half_precision:
-                        video = video.astype('float16')
-                    np.save(output_file, video)
+                        normalized_video = normalized_video.astype('float16')
+                    np.save(output_file, normalized_video)
                 else:
                     n_chunk = len(video)
                     features = th.cuda.FloatTensor(n_chunk, 2048).fill_(0)
