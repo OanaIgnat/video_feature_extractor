@@ -2,7 +2,7 @@ import torch as th
 import math
 import numpy as np
 
-import preprocessing
+from sklearn import preprocessing
 from video_loader import VideoLoader
 from torch.utils.data import DataLoader
 import argparse
