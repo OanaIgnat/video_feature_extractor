@@ -28,6 +28,7 @@ class VideoLoader(Dataset):
         return len(self.csv)
 
     def _get_video_dim(self, video_path):
+        print("before ffmpeg.probe")
         probe = ffmpeg.probe(video_path)
         print(probe)
         video_stream = next((stream for stream in probe['streams']
