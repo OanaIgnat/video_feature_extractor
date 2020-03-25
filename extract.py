@@ -21,6 +21,8 @@ parser.add_argument('--type', type=str, default='2d',
                             help='CNN type')
 parser.add_argument('--half_precision', type=int, default=1,
                             help='output half precision float')
+parser.add_argument('--only_preprocess', type=int, default=0,
+                            help='only save the preprocessed video - no final features')
 parser.add_argument('--num_decoding_thread', type=int, default=4,
                             help='Num parallel thread for video decoding')
 parser.add_argument('--l2_normalize', type=int, default=1,
@@ -57,21 +59,27 @@ with th.no_grad():
             video = data['video'].squeeze()
             if len(video.shape) == 4:
                 video = preprocess(video)
-                print(video.shape)
-                # n_chunk = len(video)
-                # features = th.cuda.FloatTensor(n_chunk, 2048).fill_(0)
-                # n_iter = int(math.ceil(n_chunk / float(args.batch_size)))
-                # for i in range(n_iter):
-                #     min_ind = i * args.batch_size
-                #     max_ind = (i + 1) * args.batch_size
-                #     video_batch = video[min_ind:max_ind].cuda()
-                #     batch_features = model(video_batch)
-                #     if args.l2_normalize:
-                #         batch_features = F.normalize(batch_features, dim=1)
-                #     features[min_ind:max_ind] = batch_features
-                # features = features.cpu().numpy()
-                # if args.half_precision:
-                #     features = features.astype('float16')
-                # np.save(output_file, features)
+
+                if args.only_preprocess:
+                    video = video.cpu().numpy()
+                    if args.half_precision:
+                        video = video.astype('float16')
+                    np.save(output_file, video)
+                else:
+                    n_chunk = len(video)
+                    features = th.cuda.FloatTensor(n_chunk, 2048).fill_(0)
+                    n_iter = int(math.ceil(n_chunk / float(args.batch_size)))
+                    for i in range(n_iter):
+                        min_ind = i * args.batch_size
+                        max_ind = (i + 1) * args.batch_size
+                        video_batch = video[min_ind:max_ind].cuda()
+                        batch_features = model(video_batch)
+                        if args.l2_normalize:
+                            batch_features = F.normalize(batch_features, dim=1)
+                        features[min_ind:max_ind] = batch_features
+                    features = features.cpu().numpy()
+                    if args.half_precision:
+                        features = features.astype('float16')
+                    np.save(output_file, features)
         else:
             print('Video {} already processed.'.format(input_file))
