@@ -66,8 +66,8 @@ with th.no_grad():
                     print("Saving only the preprocessed video")
                     # normalized_video = F.normalize(video, dim=1)
                     video = video.cpu().numpy()
-                    normalized_video = preprocessing.normalize(video)
-                    # normalized_video = video / video.sum(0).expand_as(video)
+                    # normalized_video = preprocessing.normalize(video)
+                    normalized_video = video / video.sum(0).expand_as(video)
                     if args.half_precision:
                         normalized_video = normalized_video.astype('float16')
                     np.save(output_file, normalized_video)
