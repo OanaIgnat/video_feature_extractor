@@ -65,9 +65,9 @@ with th.no_grad():
                 if args.only_preprocess:
                     print("Saving only the preprocessed video")
                     # normalized_video = F.normalize(video, dim=1)
-                    # video = video.cpu().numpy()
-                    # normalized_video = preprocessing.normalize(video)
-                    normalized_video = video / video.sum(0).expand_as(video)
+                    video = video.cpu().numpy()
+                    normalized_video = preprocessing.normalize(video, dim=1)
+                    # normalized_video = video / video.sum(0).expand_as(video)
                     np.save(output_file, normalized_video)
                 else:
                     n_chunk = len(video)
