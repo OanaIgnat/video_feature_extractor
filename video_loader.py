@@ -29,10 +29,12 @@ class VideoLoader(Dataset):
 
     def _get_video_dim(self, video_path):
         probe = ffmpeg.probe(video_path)
+        print(probe)
         video_stream = next((stream for stream in probe['streams']
                              if stream['codec_type'] == 'video'), None)
         width = int(video_stream['width'])
         height = int(video_stream['height'])
+        print(width, height)
         return height, width
 
     def _get_output_dim(self, h, w):
