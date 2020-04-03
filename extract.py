@@ -66,6 +66,7 @@ with th.no_grad():
             video = data['video'].squeeze()
             if len(video.shape) == 4:
                 video = preprocess(video)
+
                 print("video.shape: ", video.shape)
                 if args.only_preprocess:
                     print("Saving only the preprocessed video")
@@ -93,6 +94,12 @@ with th.no_grad():
                             if args.l2_normalize:
                                 batch_features = F.normalize(batch_features, dim=1)
                             features[min_ind:max_ind] = batch_features
+
+                            features = features.cpu().numpy()
+                            if args.half_precision:
+                                features = features.astype('float16')
+                            print(features.shape)
+                            np.save(output_file, features)
                     else:
                         normalized_video = F.normalize(video, dim=1)
                         print("normalized_video.shape: ", normalized_video.shape)
@@ -100,10 +107,10 @@ with th.no_grad():
                         # normalized_video = th.from_numpy(normalized_video)
                         features = model(normalized_video)['mixed_5c']
 
-                    features = features.cpu().numpy()
-                    if args.half_precision:
-                        features = features.astype('float16')
-                    print(features.shape)
-                    np.save(output_file, features)
+                        features = features.cpu().numpy()
+                        if args.half_precision:
+                            features = features.astype('float32')
+                        print(features.shape)
+                        np.save(output_file, features)
         else:
             print('Video {} already processed.'.format(input_file))
