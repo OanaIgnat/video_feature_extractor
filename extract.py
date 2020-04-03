@@ -100,6 +100,7 @@ with th.no_grad():
                     features = features.cpu().numpy()
                     if args.half_precision:
                         features = features.astype('float16')
+                    print(features.shape)
                     np.save(output_file, features)
         else:
             print('Video {} already processed.'.format(input_file))
