@@ -64,7 +64,7 @@ with th.no_grad():
                 k + 1, n_dataset, input_file))
             video = data['video'].squeeze()
             if len(video.shape) == 4:
-                video = preprocess(video)
+                # video = preprocess(video)
 
                 if args.only_preprocess:
                     print("Saving only the preprocessed video")
@@ -73,30 +73,30 @@ with th.no_grad():
                     # normalized_video = preprocessing.normalize(normalized_video)
                     # normalized_video = video / video.sum(0).expand_as(video)
                     np.save(output_file, normalized_video)
+
                 else:
-                    if args.type == 's3d':
-                        print("Pre-preprocessing video")
+                    if args.type == '3d':
                         video = F.normalize(video, dim=1)
-                    else:
-                        n_chunk = len(video)
-                        if args.type == '3d':
-                            features = th.cuda.FloatTensor(n_chunk, 2048).fill_(0)
-                        elif args.type == 's3d':
-                            features = th.cuda.FloatTensor(n_chunk, 1024).fill_(0)
-                        n_iter = int(math.ceil(n_chunk / float(args.batch_size)))
-                        for i in range(n_iter):
-                            min_ind = i * args.batch_size
-                            max_ind = (i + 1) * args.batch_size
-                            video_batch = video[min_ind:max_ind].cuda()
-                            batch_features = model(video_batch)
-                            if args.type == 's3d':
-                                batch_features = batch_features['mixed_5c']
-                            if args.l2_normalize:
-                                batch_features = F.normalize(batch_features, dim=1)
-                            features[min_ind:max_ind] = batch_features
-                        features = features.cpu().numpy()
-                        if args.half_precision:
-                            features = features.astype('float16')
-                        np.save(output_file, features)
+
+                    n_chunk = len(video)
+                    if args.type == '3d':
+                        features = th.cuda.FloatTensor(n_chunk, 2048).fill_(0)
+                    elif args.type == 's3d':
+                        features = th.cuda.FloatTensor(n_chunk, 1024).fill_(0)
+                    n_iter = int(math.ceil(n_chunk / float(args.batch_size)))
+                    for i in range(n_iter):
+                        min_ind = i * args.batch_size
+                        max_ind = (i + 1) * args.batch_size
+                        video_batch = video[min_ind:max_ind].cuda()
+                        batch_features = model(video_batch)
+                        if args.type == 's3d':
+                            batch_features = batch_features['mixed_5c']
+                        if args.l2_normalize:
+                            batch_features = F.normalize(batch_features, dim=1)
+                        features[min_ind:max_ind] = batch_features
+                    features = features.cpu().numpy()
+                    if args.half_precision:
+                        features = features.astype('float16')
+                    np.save(output_file, features)
         else:
             print('Video {} already processed.'.format(input_file))
