@@ -73,8 +73,10 @@ with th.no_grad():
                     np.save(output_file, normalized_video)
                 else:
                     n_chunk = len(video)
-                    # features = th.cuda.FloatTensor(n_chunk, 2048).fill_(0)
-                    features = th.cuda.FloatTensor(n_chunk, 1024).fill_(0)
+                    if args.type == '3d':
+                        features = th.cuda.FloatTensor(n_chunk, 2048).fill_(0)
+                    elif args.type == 's3d':
+                        features = th.cuda.FloatTensor(n_chunk, 1024).fill_(0)
                     n_iter = int(math.ceil(n_chunk / float(args.batch_size)))
                     for i in range(n_iter):
                         min_ind = i * args.batch_size
