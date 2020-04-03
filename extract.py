@@ -65,7 +65,7 @@ with th.no_grad():
             video = data['video'].squeeze()
             print(video.shape)
             if len(video.shape) == 4:
-                # video = preprocess(video)
+                video = preprocess(video)
                 if args.only_preprocess:
                     print("Saving only the preprocessed video")
                     normalized_video = F.normalize(video, dim=1)
@@ -75,9 +75,6 @@ with th.no_grad():
                     np.save(output_file, normalized_video)
 
                 else:
-                    if args.type == '3d':
-                        video = F.normalize(video, dim=1)
-
                     n_chunk = len(video)
                     if args.type == '3d':
                         features = th.cuda.FloatTensor(n_chunk, 2048).fill_(0)
@@ -95,8 +92,9 @@ with th.no_grad():
                                 batch_features = F.normalize(batch_features, dim=1)
                             features[min_ind:max_ind] = batch_features
                     else:
-                        print("video.shape: ", video.shape)
-                        features = model(video)['mixed_5c']
+                        normalized_video = F.normalize(video, dim=1)
+                        print("normalized_video.shape: ", normalized_video.shape)
+                        features = model(normalized_video)['mixed_5c']
 
                     features = features.cpu().numpy()
                     if args.half_precision:
