@@ -37,6 +37,7 @@ def get_model(args):
     else:
         print('Loading S3D ...')
         model = S3D(
+            'model/s3d_dict.npy',
             num_classes=512
          )
         model = model.cuda()
