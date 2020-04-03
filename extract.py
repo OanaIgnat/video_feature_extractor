@@ -65,7 +65,7 @@ with th.no_grad():
             # video = data['video'].squeeze()
             video = data['video']
             print(video.shape)
-            if len(video.shape) == 4:
+            if len(video.shape) == 5:
                 # video = preprocess(video)
 
 
