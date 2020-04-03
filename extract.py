@@ -63,7 +63,6 @@ with th.no_grad():
             print('Computing features of video {}/{}: {}'.format(
                 k + 1, n_dataset, input_file))
             video = data['video'].squeeze()
-            video = data['video']
             print(video.shape)
             if len(video.shape) == 4:
                 # video = preprocess(video)
