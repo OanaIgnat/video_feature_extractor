@@ -11,6 +11,7 @@ from preprocessing import Preprocessing
 from random_sequence_shuffler import RandomSequenceSampler
 import torch.nn.functional as F
 
+# python extract.py --csv=input.csv --type=3d --batch_size=64 --num_decoding_thread=4
 parser = argparse.ArgumentParser(description='Easy video feature extractor')
 
 parser.add_argument(
@@ -37,7 +38,7 @@ dataset = VideoLoader(
     args.csv,
     framerate=1 if args.type == '2d' else 24,
     size=224 if args.type == '2d' else 112,
-    centercrop=(args.type == 's3d' or args.type == '3d'),
+    centercrop=(args.type == '3d'),
 )
 n_dataset = len(dataset)
 sampler = RandomSequenceSampler(n_dataset, 10)
@@ -55,6 +56,7 @@ with th.no_grad():
     for k, data in enumerate(loader):
         input_file = data['input'][0]
         output_file = data['output'][0]
+        print(data['video'].shape)
         if len(data['video'].shape) > 3:
             print('Computing features of video {}/{}: {}'.format(
                 k + 1, n_dataset, input_file))

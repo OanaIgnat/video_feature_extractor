@@ -16,7 +16,7 @@ class Preprocessing(object):
         self.type = type
         if type == '2d':
             self.norm = Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-        elif type == '3d':
+        else:
             self.norm = Normalize(mean=[110.6, 103.2, 96.3], std=[1.0, 1.0, 1.0])
 
     def _zero_pad(self, tensor, size):
@@ -31,7 +31,7 @@ class Preprocessing(object):
         if self.type == '2d':
             tensor = tensor / 255.0
             tensor = self.norm(tensor)
-        elif self.type == '3d':
+        else:
             tensor = self._zero_pad(tensor, 16)
             tensor = self.norm(tensor)
             tensor = tensor.view(-1, 16, 3, 112, 112)
