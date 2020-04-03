@@ -62,13 +62,15 @@ with th.no_grad():
         if len(data['video'].shape) > 3:
             print('Computing features of video {}/{}: {}'.format(
                 k + 1, n_dataset, input_file))
+
             video = data['video'].squeeze()
-            print(video.shape)
             if len(video.shape) == 4:
                 video = preprocess(video)
+                print("video.shape: ", video.shape)
                 if args.only_preprocess:
                     print("Saving only the preprocessed video")
                     normalized_video = F.normalize(video, dim=1)
+                    print("normalized_video.shape: ", normalized_video.shape)
                     normalized_video = normalized_video.cpu().numpy()
                     # normalized_video = preprocessing.normalize(normalized_video)
                     # normalized_video = video / video.sum(0).expand_as(video)
