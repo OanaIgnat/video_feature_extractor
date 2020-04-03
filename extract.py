@@ -84,19 +84,22 @@ with th.no_grad():
                     n_chunk = len(video)
                     if args.type == '3d':
                         features = th.cuda.FloatTensor(n_chunk, 2048).fill_(0)
-                    elif args.type == 's3d':
-                        features = th.cuda.FloatTensor(n_chunk, 1024).fill_(0)
-                    n_iter = int(math.ceil(n_chunk / float(args.batch_size)))
-                    for i in range(n_iter):
-                        min_ind = i * args.batch_size
-                        max_ind = (i + 1) * args.batch_size
-                        video_batch = video[min_ind:max_ind].cuda()
-                        batch_features = model(video_batch)
-                        if args.type == 's3d':
-                            batch_features = batch_features['mixed_5c']
-                        if args.l2_normalize:
-                            batch_features = F.normalize(batch_features, dim=1)
-                        features[min_ind:max_ind] = batch_features
+
+                    if args.type == '3d' or args.type == '2d':
+                        n_iter = int(math.ceil(n_chunk / float(args.batch_size)))
+                        for i in range(n_iter):
+                            min_ind = i * args.batch_size
+                            max_ind = (i + 1) * args.batch_size
+                            video_batch = video[min_ind:max_ind].cuda()
+                            batch_features = model(video_batch)
+                            if args.type == 's3d':
+                                batch_features = batch_features['mixed_5c']
+                            if args.l2_normalize:
+                                batch_features = F.normalize(batch_features, dim=1)
+                            features[min_ind:max_ind] = batch_features
+                    else:
+                        features = model(video)['mixed_5c']
+
                     features = features.cpu().numpy()
                     if args.half_precision:
                         features = features.astype('float16')
