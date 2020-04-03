@@ -96,7 +96,8 @@ with th.no_grad():
                     else:
                         normalized_video = F.normalize(video, dim=1)
                         print("normalized_video.shape: ", normalized_video.shape)
-                        normalized_video = normalized_video.cpu().numpy()
+                        # normalized_video = normalized_video.cpu().numpy()
+                        # normalized_video = th.from_numpy(normalized_video)
                         features = model(normalized_video)['mixed_5c']
 
                     features = features.cpu().numpy()
