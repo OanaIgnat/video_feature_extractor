@@ -19,7 +19,7 @@ parser.add_argument(
     help='input csv with video input path')
 parser.add_argument('--batch_size', type=int, default=64,
                             help='batch size')
-parser.add_argument('--type', type=str, default='2d',
+parser.add_argument('--type', type=str, default='s3d',
                             help='CNN type')
 parser.add_argument('--half_precision', type=int, default=1,
                             help='output half precision float')
@@ -37,7 +37,7 @@ dataset = VideoLoader(
     args.csv,
     framerate=1 if args.type == '2d' else 24,
     size=224 if args.type == '2d' else 112,
-    centercrop=(args.type == '3d'),
+    centercrop=(args.type == 's3d' or args.type == '3d'),
 )
 n_dataset = len(dataset)
 sampler = RandomSequenceSampler(n_dataset, 10)
@@ -71,7 +71,8 @@ with th.no_grad():
                     np.save(output_file, normalized_video)
                 else:
                     n_chunk = len(video)
-                    features = th.cuda.FloatTensor(n_chunk, 2048).fill_(0)
+                    # features = th.cuda.FloatTensor(n_chunk, 2048).fill_(0)
+                    features = th.cuda.FloatTensor(n_chunk, 1024).fill_(0)
                     n_iter = int(math.ceil(n_chunk / float(args.batch_size)))
                     for i in range(n_iter):
                         min_ind = i * args.batch_size

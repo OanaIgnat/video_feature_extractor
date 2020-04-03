@@ -1,6 +1,8 @@
 import sys
 import torch as th
 import torchvision.models as models
+
+from s3dg import S3D
 from videocnn.models import resnext
 from torch import nn
 
@@ -14,13 +16,13 @@ class GlobalAvgPool(nn.Module):
 
 
 def get_model(args):
-    assert args.type in ['2d', '3d']
+    assert args.type in ['2d', '3d', 's3d']
     if args.type == '2d':
         print('Loading 2D-ResNet-152 ...')
         model = models.resnet152(pretrained=True)
         model = nn.Sequential(*list(model.children())[:-2], GlobalAvgPool())
         model = model.cuda()
-    else:
+    elif args.type == '3d':
         print('Loading 3D-ResneXt-101 ...')
         model = resnext.resnet101(
             num_classes=400,
@@ -32,7 +34,14 @@ def get_model(args):
         model = model.cuda()
         model_data = th.load(args.resnext101_model_path)
         model.load_state_dict(model_data)
-
+    else:
+        print('Loading S3D ...')
+        model = S3D(
+            num_classes=512
+         )
+        model = model.cuda()
+        model_data = th.load(args.s3d_model_path)
+        model.load_state_dict(model_data)
     model.eval()
     print('loaded')
     return model
