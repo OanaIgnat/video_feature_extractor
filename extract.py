@@ -105,12 +105,14 @@ with th.no_grad():
                         print("normalized_video.shape: ", normalized_video.shape)
                         # normalized_video = normalized_video.cpu().numpy()
                         # normalized_video = th.from_numpy(normalized_video)
+                        print(normalized_video)
                         features = model(normalized_video)['mixed_5c']
 
                         features = features.cpu().numpy()
                         if args.half_precision:
                             features = features.astype('float32')
                         print(features.shape)
+                        print(features)
                         np.save(output_file, features)
         else:
             print('Video {} already processed.'.format(input_file))
