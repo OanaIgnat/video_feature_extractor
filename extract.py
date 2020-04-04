@@ -99,13 +99,24 @@ with th.no_grad():
                             np.save(output_file, features)
                     else:
                         normalized_video = F.normalize(video, dim=1)
+                        features = th.cuda.FloatTensor(n_chunk, 1024).fill_(0)
+                        n_iter = int(math.ceil(n_chunk / float(args.batch_size)))
+
+                        for i in range(n_iter):
+                            min_ind = i * args.batch_size
+                            max_ind = (i + 1) * args.batch_size
+                            video_batch = normalized_video[min_ind:max_ind].cuda()
+                            print("video_batch.shape: ", video_batch.shape)
+                            batch_features = model(video_batch)
+                            features[min_ind:max_ind] = batch_features
+
                         # normalized_video = normalized_video.cpu().numpy()
                         # normalized_video = th.from_numpy(normalized_video)
-                        features = model(normalized_video)['mixed_5c']
+                        # features = model(normalized_video)['mixed_5c']
 
                         features = features.cpu().numpy()
                         if args.half_precision:
-                            features = features.astype('float32')
+                            features = features.astype('float16')
 
                         np.save(output_file, features)
         else:
