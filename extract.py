@@ -123,8 +123,8 @@ with th.no_grad():
                             # device = th.device('cuda:0')
                             # video_batch.to(device)
                             batch_features = model(video_batch)
-                            batch_features = F.normalize(batch_features, dim=1)
-                            features[min_ind:max_ind] = batch_features['mixed_5c']
+                            batch_features = F.normalize(batch_features['mixed_5c'], dim=1)
+                            features[min_ind:max_ind] = batch_features
 
                         # normalized_video = normalized_video.cpu().numpy()
                         # normalized_video = th.from_numpy(normalized_video)
