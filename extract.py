@@ -54,17 +54,17 @@ loader = DataLoader(
 preprocess = Preprocessing(args.type)
 model = get_model(args)
 
-# setting device on GPU if available, else CPU
-device = th.device('cuda' if th.cuda.is_available() else 'cpu')
-print('Using device:', device)
-print()
-
-#Additional Info when using cuda
-if device.type == 'cuda':
-    print(th.cuda.get_device_name(0))
-    print('Memory Usage:')
-    print('Allocated:', round(th.cuda.memory_allocated(0)/1024**3,1), 'GB')
-    print('Cached:   ', round(th.cuda.memory_cached(0)/1024**3,1), 'GB')
+# # setting device on GPU if available, else CPU
+# device = th.device('cuda' if th.cuda.is_available() else 'cpu')
+# print('Using device:', device)
+# print()
+#
+# #Additional Info when using cuda
+# if device.type == 'cuda':
+#     print(th.cuda.get_device_name(0))
+#     print('Memory Usage:')
+#     print('Allocated:', round(th.cuda.memory_allocated(0)/1024**3,1), 'GB')
+#     print('Cached:   ', round(th.cuda.memory_cached(0)/1024**3,1), 'GB')
 
 with th.no_grad():
     for k, data in enumerate(loader):
@@ -110,19 +110,20 @@ with th.no_grad():
                                 features = features.astype('float16')
                             np.save(output_file, features)
                     else:
-                        normalized_video = F.normalize(video, dim=1)
+                        # normalized_video = F.normalize(video, dim=1)
                         features = th.cuda.FloatTensor(n_chunk, 1024).fill_(0)
                         n_iter = int(math.ceil(n_chunk / float(args.batch_size)))
 
                         for i in range(n_iter):
                             min_ind = i * args.batch_size
                             max_ind = (i + 1) * args.batch_size
-                            video_batch = normalized_video[min_ind:max_ind]
+                            video_batch = video[min_ind:max_ind]
                             print("video_batch.shape: ", video_batch.shape)
                             video_batch = video_batch.cuda()
-                            device = th.device('cuda:0')
-                            video_batch.to(device)
+                            # device = th.device('cuda:0')
+                            # video_batch.to(device)
                             batch_features = model(video_batch)
+                            batch_features = F.normalize(batch_features, dim=1)
                             features[min_ind:max_ind] = batch_features['mixed_5c']
 
                         # normalized_video = normalized_video.cpu().numpy()
