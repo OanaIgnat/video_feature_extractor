@@ -108,6 +108,8 @@ with th.no_grad():
                             video_batch = normalized_video[min_ind:max_ind]
                             print("video_batch.shape: ", video_batch.shape)
                             video_batch = video_batch.cuda()
+                            device = th.device('cuda:0')
+                            video_batch.to(device)
                             batch_features = model(video_batch)
                             features[min_ind:max_ind] = batch_features['mixed_5c']
 

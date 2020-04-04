@@ -43,6 +43,8 @@ def get_model(args):
         model = model.cuda()
         model_data = th.load(args.s3d_model_path)
         model.load_state_dict(model_data)
+        device = th.device('cuda:0')
+        model.to(device)
     model.eval()
     print('loaded')
     return model
