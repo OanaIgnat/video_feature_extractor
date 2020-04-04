@@ -40,7 +40,7 @@ def get_model(args):
             'model/s3d_dict.npy',
             num_classes=512
          )
-        model = model.cuda()
+        # model = model.cuda()
         model_data = th.load(args.s3d_model_path)
         model.load_state_dict(model_data)
     model.eval()
