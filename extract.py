@@ -54,6 +54,18 @@ loader = DataLoader(
 preprocess = Preprocessing(args.type)
 model = get_model(args)
 
+# setting device on GPU if available, else CPU
+device = th.device('cuda' if th.cuda.is_available() else 'cpu')
+print('Using device:', device)
+print()
+
+#Additional Info when using cuda
+if device.type == 'cuda':
+    print(th.cuda.get_device_name(0))
+    print('Memory Usage:')
+    print('Allocated:', round(th.cuda.memory_allocated(0)/1024**3,1), 'GB')
+    print('Cached:   ', round(th.cuda.memory_cached(0)/1024**3,1), 'GB')
+
 with th.no_grad():
     for k, data in enumerate(loader):
         input_file = data['input'][0]
