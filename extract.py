@@ -11,7 +11,7 @@ from preprocessing import Preprocessing
 from random_sequence_shuffler import RandomSequenceSampler
 import torch.nn.functional as F
 
-# python extract.py --csv=input.csv --type=3d --batch_size=64 --num_decoding_thread=4
+# python extract.py --csv=input.csv --type=s3d --batch_size=64 --num_decoding_thread=8
 parser = argparse.ArgumentParser(description='Easy video feature extractor')
 
 parser.add_argument(

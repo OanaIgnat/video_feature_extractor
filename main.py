@@ -11,6 +11,7 @@ def create_input_csv():
 
     with open('input.csv', 'w+') as file:
         file.write("video_path,feature_path")
+        file.write('\n')
         for video_path in video_files:
             line = video_path + "," + "output/"+ video_path.split("/")[-1].split(".")[0]+".npy"
             file.write(line)
